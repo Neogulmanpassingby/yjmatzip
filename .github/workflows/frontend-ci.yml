@@ -1,0 +1,41 @@
+name: Frontend CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'yjmatzip-frontend/**' # 프론트엔드 코드 변경 시에만 작동
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.ACTION_TOKEN }}
+
+      - name: Docker Login
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and Push Frontend Image
+        run: |
+          TAG=$(date +%Y%m%d-%H%M)
+          IMAGE_NAME=${{ secrets.DOCKERHUB_USERNAME }}/yjmatzip-frontend
+          
+          docker build -t $IMAGE_NAME:$TAG ./yjmatzip-frontend
+          docker push $IMAGE_NAME:$TAG
+          
+          # 프론트엔드용 매니페스트 파일의 이미지 태그 수정
+          sed -i "s|image: .*yjmatzip-frontend:.*|image: $IMAGE_NAME:$TAG|g" manifest/app/frontend-deployment.yaml
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "action@github.com"
+          git add manifest/app/frontend-deployment.yaml
+          git commit -m "chore: update frontend image to $TAG"
+          git push
