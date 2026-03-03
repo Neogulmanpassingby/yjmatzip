@@ -119,3 +119,13 @@ body,
   animation: fadeUp 0.35s ease-out forwards;
 }
 
+/* 하단 패널 슬라이드업 */
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.slide-up {
+  animation: slideUp 0.32s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+

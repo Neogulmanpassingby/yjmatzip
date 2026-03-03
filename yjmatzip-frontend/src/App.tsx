@@ -251,15 +251,12 @@ function App() {
             </div>
           )}
 
-          {/* 결과 화면 — 지도(상단) + 정보 카드(하단) */}
+          {/* 결과 화면 — 지도(가변) + 정보 패널(고정) */}
           {selected && !isAnimating && (
-            <div className="flex-1 min-h-0 flex flex-col px-4 pt-3 gap-3 fade-up">
+            <div className="flex-1 min-h-0 flex flex-col fade-up">
 
-              {/* 지도 — 상단 고정 높이 */}
-              <div
-                className="shrink-0 rounded-2xl overflow-hidden"
-                style={{ height: '42vh', minHeight: '200px', maxHeight: '300px' }}
-              >
+              {/* 지도 — 남은 공간 전부 */}
+              <div className="flex-1 min-h-0 overflow-hidden">
                 {!loading && !error ? (
                   <KakaoMap center={mapCenter} style={{ width: '100%', height: '100%' }} level={4}>
                     <MapMarker
@@ -276,14 +273,14 @@ function App() {
                 )}
               </div>
 
-              {/* 맛집 정보 카드 */}
+              {/* 하단 정보 패널 — 항상 완전히 보임 */}
               <div
                 key={selected.id}
-                className="result-pop flex-1 min-h-0 overflow-y-auto rounded-2xl"
+                className="slide-up shrink-0"
                 style={{
-                  background: 'rgba(13,22,17,0.97)',
-                  border: '1px solid rgba(62,207,142,0.2)',
-                  boxShadow: '0 -4px 24px rgba(0,0,0,0.4)',
+                  background: '#0d1612',
+                  borderTop: '1px solid rgba(62,207,142,0.18)',
+                  boxShadow: '0 -8px 32px rgba(0,0,0,0.5)',
                 }}
               >
                 <RestaurantCard restaurant={selected} />
