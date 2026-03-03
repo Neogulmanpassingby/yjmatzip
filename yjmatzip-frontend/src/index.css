@@ -18,10 +18,10 @@ body,
 /* 슬롯 애니메이션 */
 @keyframes slotOut {
   from { transform: translateY(0);     opacity: 1; }
-  to   { transform: translateY(-18px); opacity: 0; }
+  to   { transform: translateY(-24px); opacity: 0; }
 }
 @keyframes slotIn {
-  from { transform: translateY(18px);  opacity: 0; }
+  from { transform: translateY(24px);  opacity: 0; }
   to   { transform: translateY(0);     opacity: 1; }
 }
 

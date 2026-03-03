@@ -101,16 +101,9 @@ function App() {
     }
   }
 
-  function pickRandom(instant = false) {
+  function pickRandom() {
     if (restaurants.length === 0 || isAnimating) return
     const pick = restaurants[Math.floor(Math.random() * restaurants.length)]
-
-    if (instant) {
-      setSelected(pick)
-      setMapCenter({ lat: parseFloat(pick.y) + 0.0015, lng: parseFloat(pick.x) })
-      return
-    }
-
     setSelected(null)
     setIsAnimating(true)
     setSlot({ prev: null, curr: '', key: 0 })
@@ -171,15 +164,6 @@ function App() {
                 </p>
               </div>
             </div>
-            {dau !== null && (
-              <span className="text-xs px-2.5 py-1 rounded-full" style={{
-                background: 'rgba(62,207,142,0.12)',
-                color: '#3ecf8e',
-                border: '1px solid rgba(62,207,142,0.25)',
-              }}>
-                오늘 {dau}명 방문
-              </span>
-            )}
           </div>
         </header>
 
@@ -208,7 +192,7 @@ function App() {
                 </>
               ) : (
                 <>
-                  <p className="font-bold mb-5 leading-tight"
+                  <p className="font-bold mb-4 leading-tight"
                     style={{
                       fontSize: '2.6rem',
                       background: 'linear-gradient(135deg, #ffffff 10%, #3ecf8e 90%)',
@@ -218,9 +202,19 @@ function App() {
                     }}>
                     오늘 뭐 먹지?
                   </p>
-                  <p className="text-sm" style={{ color: 'rgba(255,255,255,0.3)' }}>
+                  <p className="text-sm mb-6" style={{ color: 'rgba(255,255,255,0.3)' }}>
                     아래 버튼을 눌러 랜덤 맛집을 뽑아보세요
                   </p>
+                  {dau !== null && (
+                    <div className="flex items-center gap-1.5 px-3.5 py-2 rounded-full" style={{
+                      background: 'rgba(62,207,142,0.08)',
+                      border: '1px solid rgba(62,207,142,0.2)',
+                    }}>
+                      <span className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>지금</span>
+                      <span className="text-sm font-bold" style={{ color: '#3ecf8e' }}>{dau}명</span>
+                      <span className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>과 함께하는 중</span>
+                    </div>
+                  )}
                 </>
               )}
             </div>
@@ -238,13 +232,13 @@ function App() {
               <div className="relative h-10 w-full overflow-hidden">
                 {slot.prev && (
                   <div key={`out-${slot.key}`} className="absolute inset-0 flex items-center justify-center"
-                    style={{ animation: 'slotOut 0.08s ease-in forwards' }}>
+                    style={{ animation: 'slotOut 0.13s cubic-bezier(0.4,0,1,1) forwards' }}>
                     <span className="text-xl font-bold truncate px-4 text-center"
                       style={{ color: 'rgba(255,255,255,0.25)' }}>{slot.prev}</span>
                   </div>
                 )}
                 <div key={`in-${slot.key}`} className="absolute inset-0 flex items-center justify-center"
-                  style={{ animation: slot.prev ? 'slotIn 0.08s ease-out forwards' : 'none' }}>
+                  style={{ animation: slot.prev ? 'slotIn 0.13s cubic-bezier(0,0,0.2,1) forwards' : 'none' }}>
                   <span className="text-xl font-bold text-white truncate px-4 text-center">{slot.curr}</span>
                 </div>
               </div>
@@ -299,7 +293,7 @@ function App() {
           }}
         >
           <button
-            onClick={() => pickRandom(!!selected)}
+            onClick={() => pickRandom()}
             disabled={!canPick}
             className="btn-pick w-full py-4 font-bold rounded-2xl text-sm select-none"
           >
