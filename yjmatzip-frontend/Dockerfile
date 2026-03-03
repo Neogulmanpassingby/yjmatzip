@@ -4,8 +4,12 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
+ARG VITE_KAKAOMAP_KEY
+ARG VITE_API_BASE_URL
+ENV VITE_KAKAOMAP_KEY=$VITE_KAKAOMAP_KEY
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 # 여기서 Vite(또는 CRA) 빌드가 실행되고 dist 폴더가 생성됩니다.
-RUN npm run build 
+RUN npm run build
 
 # 2단계: 실행 환경 (가벼운 Nginx 웹 서버)
 FROM nginx:alpine

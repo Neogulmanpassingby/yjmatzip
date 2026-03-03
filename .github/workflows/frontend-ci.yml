@@ -26,7 +26,10 @@ jobs:
           TAG=$(date +%Y%m%d-%H%M)
           IMAGE_NAME=${{ secrets.DOCKERHUB_USERNAME }}/yjmatzip-frontend
           
-          docker build -t $IMAGE_NAME:$TAG ./yjmatzip-frontend
+          docker build \
+            --build-arg VITE_KAKAOMAP_KEY=${{ secrets.VITE_KAKAOMAP_KEY }} \
+            --build-arg VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }} \
+            -t $IMAGE_NAME:$TAG ./yjmatzip-frontend
           docker push $IMAGE_NAME:$TAG
           
           # 프론트엔드용 매니페스트 파일의 이미지 태그 수정
