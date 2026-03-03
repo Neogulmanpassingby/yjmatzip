@@ -1,3 +1,4 @@
+// trigger ci
 import { useEffect, useRef, useState } from 'react'
 import { Map as KakaoMap, MapMarker, useKakaoLoader } from 'react-kakao-maps-sdk'
 import './App.css'
