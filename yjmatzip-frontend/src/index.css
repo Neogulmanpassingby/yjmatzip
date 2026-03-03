@@ -1,0 +1,121 @@
+@import "tailwindcss";
+
+* {
+  -webkit-tap-highlight-color: transparent;
+  font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* 슬롯 애니메이션 */
+@keyframes slotOut {
+  from { transform: translateY(0);     opacity: 1; }
+  to   { transform: translateY(-18px); opacity: 0; }
+}
+@keyframes slotIn {
+  from { transform: translateY(18px);  opacity: 0; }
+  to   { transform: translateY(0);     opacity: 1; }
+}
+
+/* 아이콘 흔들림 */
+@keyframes shiver {
+  0%,100% { transform: rotate(0deg) scale(1); }
+  20%     { transform: rotate(-12deg) scale(1.15); }
+  40%     { transform: rotate(10deg)  scale(1.12); }
+  60%     { transform: rotate(-7deg)  scale(1.08); }
+  80%     { transform: rotate(6deg)   scale(1.05); }
+}
+.shiver {
+  animation: shiver 0.4s ease-in-out;
+}
+
+/* 아이콘 플로팅 */
+@keyframes float {
+  0%,100% { transform: translateY(0px); }
+  50%     { transform: translateY(-10px); }
+}
+.float-icon {
+  animation: float 3s ease-in-out infinite;
+  display: inline-block;
+}
+
+/* 오빗 */
+@keyframes orbit {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes orbitReverse {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(-360deg); }
+}
+
+/* 버튼 */
+.btn-pick {
+  background: linear-gradient(135deg, #3ecf8e 0%, #25a06b 100%);
+  border: none;
+  color: #fff;
+  letter-spacing: 0.02em;
+  box-shadow: 0 0 28px rgba(62,207,142,0.45), 0 6px 20px rgba(0,0,0,0.4);
+  transition: filter 0.2s ease, box-shadow 0.2s ease, transform 0.08s ease;
+}
+.btn-pick:not(:disabled):hover {
+  filter: brightness(1.1);
+  box-shadow: 0 0 40px rgba(62,207,142,0.6), 0 8px 24px rgba(0,0,0,0.4);
+}
+.btn-pick:not(:disabled):active {
+  transform: scale(0.97);
+  filter: brightness(0.93);
+  box-shadow: 0 0 16px rgba(62,207,142,0.3), 0 4px 12px rgba(0,0,0,0.4);
+}
+.btn-pick:disabled {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.2);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* 아이콘 펄스 링 */
+@keyframes pulseRing {
+  0%   { transform: scale(1);   opacity: 0.55; }
+  100% { transform: scale(1.7); opacity: 0; }
+}
+.pulse-ring {
+  animation: pulseRing 2.2s ease-out infinite;
+}
+
+/* 슬롯 도트 바운스 */
+@keyframes dotBounce {
+  0%, 100% { transform: translateY(0);   opacity: 0.5; }
+  50%       { transform: translateY(-7px); opacity: 1; }
+}
+
+/* 결과 카드 팝인 */
+@keyframes resultPop {
+  0%   { transform: scale(0.94) translateY(8px); opacity: 0; }
+  60%  { transform: scale(1.02) translateY(-2px); }
+  100% { transform: scale(1)    translateY(0);    opacity: 1; }
+}
+
+.result-pop {
+  animation: resultPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* 지도 페이드업 */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+.fade-up {
+  animation: fadeUp 0.35s ease-out forwards;
+}
+

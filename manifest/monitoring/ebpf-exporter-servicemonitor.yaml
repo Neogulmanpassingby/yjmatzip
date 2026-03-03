@@ -1,0 +1,14 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: ebpf-exporter
+  namespace: monitoring
+  labels:
+    release: kube-prom # Helm 설치 시 사용한 release 이름과 일치해야 합니다.
+spec:
+  selector:
+    matchLabels:
+      app: ebpf-exporter
+  endpoints:
+  - port: metrics
+    interval: 15s

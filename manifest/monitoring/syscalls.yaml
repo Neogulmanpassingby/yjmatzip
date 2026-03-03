@@ -1,0 +1,10 @@
+metrics:
+  counters:
+    - name: syscall_total
+      help: Total number of syscalls
+      table_name: syscalls_map
+      labels:
+        - name: pid
+          size: 4
+          decoders:
+            - name: uint

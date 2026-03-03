@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: ebpf-exporter
+  namespace: monitoring
+spec:
+  selector:
+    matchLabels:
+      app: ebpf-exporter
+  template:
+    metadata:
+      labels:
+        app: ebpf-exporter
+    spec:
+      hostPID: true
+      hostNetwork: true
+      containers:
+      - name: ebpf-exporter
+        image: ghcr.io/cloudflare/ebpf_exporter:v2.4.2
+        args:
+          # 이미지 내부에 포함된 /examples 디렉토리를 직접 사용합니다.
+          - "--config.dir=/examples"
+          - "--config.names=tcp-retrans"
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: sys
+          mountPath: /sys
+          readOnly: true
+        - name: modules
+          mountPath: /lib/modules
+          readOnly: true
+      volumes:
+      - name: sys
+        hostPath:
+          path: /sys
+      - name: modules
+        hostPath:
+          path: /lib/modules

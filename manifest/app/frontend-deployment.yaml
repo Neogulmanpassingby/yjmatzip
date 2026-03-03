@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yjmatzip-frontend
+  namespace: yjmatzip
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: yjmatzip-frontend
+  template:
+    metadata:
+      labels:
+        app: yjmatzip-frontend
+    spec:
+      containers:
+      - name: frontend
+        image: whdnduf/yjmatzip-frontend:v1 # 방금 푸시한 이미지
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80 # Nginx 기본 포트
+        resources:
+          limits:
+            memory: "128Mi" # 정적 파일 서빙이라 메모리를 거의 안 씁니다
+            cpu: "100m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: yjmatzip-frontend-svc
+  namespace: yjmatzip
+spec:
+  selector:
+    app: yjmatzip-frontend
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
