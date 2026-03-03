@@ -21,14 +21,6 @@ function buildGrid(centerLat: number, centerLng: number, rows: number, cols: num
 const GRID = buildGrid(37.2990, 126.9715, 4, 4, 300)
 const SEARCH_RADIUS = 350
 
-// 공통 glass 스타일
-const glass: React.CSSProperties = {
-  background: 'rgba(255,255,255,0.07)',
-  backdropFilter: 'blur(24px)',
-  WebkitBackdropFilter: 'blur(24px)',
-  border: '1px solid rgba(255,255,255,0.12)',
-}
-
 const glassDark: React.CSSProperties = {
   background: '#080f0b',
 }
