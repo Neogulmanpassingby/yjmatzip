@@ -22,10 +22,6 @@ function buildGrid(centerLat: number, centerLng: number, rows: number, cols: num
 const GRID = buildGrid(37.2990, 126.9715, 4, 4, 300)
 const SEARCH_RADIUS = 350
 
-const glassDark: React.CSSProperties = {
-  background: '#080f0b',
-}
-
 function getOrCreateUuid(): string {
   let uuid = localStorage.getItem('visitor_uuid')
   if (!uuid) {
@@ -98,7 +94,7 @@ function App() {
         setSlot({ prev: r.place_name, curr: finalPick.place_name, key: Date.now() + 1 })
         setTimeout(() => {
           setSelected(finalPick)
-          setMapCenter({ lat: parseFloat(finalPick.y) + 0.0018, lng: parseFloat(finalPick.x) })
+          setMapCenter({ lat: parseFloat(finalPick.y) + 0.0015, lng: parseFloat(finalPick.x) })
           setIsAnimating(false)
         }, 350)
       }, delay)
@@ -111,7 +107,7 @@ function App() {
 
     if (instant) {
       setSelected(pick)
-      setMapCenter({ lat: parseFloat(pick.y) + 0.0018, lng: parseFloat(pick.x) })
+      setMapCenter({ lat: parseFloat(pick.y) + 0.0015, lng: parseFloat(pick.x) })
       return
     }
 
@@ -140,11 +136,11 @@ function App() {
   }
 
   return (
-    <div className="relative flex flex-col h-full overflow-hidden" style={{ background: '#080f0b' }}>
+    /* 전체 배경 */
+    <div className="relative h-full overflow-hidden" style={{ background: '#080f0b' }}>
 
-      {/* ── 배경 그라데이션 블롭 ── */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {/* 그리드 텍스처 */}
+      {/* 배경 블롭 — 풀스크린 */}
+      <div className="absolute inset-0 pointer-events-none">
         <div className="absolute inset-0" style={{
           backgroundImage: 'linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)',
           backgroundSize: '40px 40px',
@@ -157,157 +153,164 @@ function App() {
           style={{ background: 'radial-gradient(circle, rgba(46,78,63,0.45) 0%, transparent 70%)' }} />
       </div>
 
-      {/* ── 헤더 ── */}
-      <header
-        className="relative shrink-0 px-5 pb-4"
-        style={{ paddingTop: 'calc(env(safe-area-inset-top) + 14px)', ...glassDark }}
-      >
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <img src={logo} alt="성균관대 로고" className="w-8 h-8 shrink-0 object-contain" />
-            <div>
-              <h1 className="text-sm font-semibold text-white leading-tight">율전캠 오늘 뭐 먹지?</h1>
-              <p className="text-xs leading-tight" style={{ color: 'rgba(255,255,255,0.4)' }}>
-                성균관대 자연과학캠퍼스
-              </p>
+      {/* 콘텐츠 — 모바일 기준, 데스크탑 중앙 고정 */}
+      <div className="relative h-full flex flex-col" style={{ maxWidth: '430px', margin: '0 auto' }}>
+
+        {/* ── 헤더 ── */}
+        <header
+          className="shrink-0 px-5 pb-4"
+          style={{ paddingTop: 'calc(env(safe-area-inset-top) + 14px)', background: '#080f0b' }}
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <img src={logo} alt="성균관대 로고" className="w-8 h-8 shrink-0 object-contain" />
+              <div>
+                <h1 className="text-sm font-semibold text-white leading-tight">율전캠 오늘 뭐 먹지?</h1>
+                <p className="text-xs leading-tight" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                  성균관대 자연과학캠퍼스
+                </p>
+              </div>
             </div>
-          </div>
-          {dau !== null && (
-            <span className="text-xs px-2.5 py-1 rounded-full" style={{
-              background: 'rgba(62,207,142,0.12)',
-              color: '#3ecf8e',
-              border: '1px solid rgba(62,207,142,0.25)',
-            }}>
-              오늘 {dau}명 방문
-            </span>
-          )}
-        </div>
-      </header>
-
-      {/* ── 본문 ── */}
-      <main className="relative flex-1 flex flex-col min-h-0 px-4 py-4 gap-3">
-
-        {/* 홈 — 완전 투명, 3D 틸트 */}
-        {!selected && !isAnimating && (
-          <div
-            ref={homeCardRef}
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}
-            className="flex-1 flex flex-col items-center justify-center text-center px-6"
-            style={{
-              transform: `perspective(700px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
-              transition: tilt.x === 0 && tilt.y === 0
-                ? 'transform 0.6s cubic-bezier(0.23,1,0.32,1)'
-                : 'transform 0.08s ease',
-              willChange: 'transform',
-            }}
-          >
-            {isSearching ? (
-              <>
-                <p className="text-3xl font-bold text-white mb-3">탐색 중...</p>
-                <p className="text-sm" style={{ color: 'rgba(255,255,255,0.35)' }}>주변 맛집을 불러오고 있어요</p>
-              </>
-            ) : (
-              <>
-                <p className="font-bold mb-5 leading-tight"
-                  style={{
-                    fontSize: '2.6rem',
-                    background: 'linear-gradient(135deg, #ffffff 10%, #3ecf8e 90%)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    backgroundClip: 'text',
-                  }}>
-                  오늘 뭐 먹지?
-                </p>
-                <p className="text-sm" style={{ color: 'rgba(255,255,255,0.3)' }}>
-                  아래 버튼을 눌러 랜덤 맛집을 뽑아보세요
-                </p>
-              </>
+            {dau !== null && (
+              <span className="text-xs px-2.5 py-1 rounded-full" style={{
+                background: 'rgba(62,207,142,0.12)',
+                color: '#3ecf8e',
+                border: '1px solid rgba(62,207,142,0.25)',
+              }}>
+                오늘 {dau}명 방문
+              </span>
             )}
           </div>
-        )}
+        </header>
 
-        {/* 뽑는 중 — 슬롯 */}
-        {isAnimating && (
-          <div className="flex-1 flex flex-col items-center justify-center text-center px-8">
-            <div className="flex gap-2 mb-6">
-              {[0, 0.18, 0.36].map((delay, i) => (
-                <div key={i} className="w-2 h-2 rounded-full"
-                  style={{ background: '#3ecf8e', animation: `dotBounce 0.75s ease-in-out ${delay}s infinite` }} />
-              ))}
-            </div>
-            <div className="relative h-10 w-full overflow-hidden">
-              {slot.prev && (
-                <div key={`out-${slot.key}`} className="absolute inset-0 flex items-center justify-center"
-                  style={{ animation: 'slotOut 0.08s ease-in forwards' }}>
-                  <span className="text-xl font-bold truncate px-4 text-center"
-                    style={{ color: 'rgba(255,255,255,0.25)' }}>{slot.prev}</span>
-                </div>
-              )}
-              <div key={`in-${slot.key}`} className="absolute inset-0 flex items-center justify-center"
-                style={{ animation: slot.prev ? 'slotIn 0.08s ease-out forwards' : 'none' }}>
-                <span className="text-xl font-bold text-white truncate px-4 text-center">{slot.curr}</span>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* ── 본문 ── */}
+        <main className="flex-1 min-h-0 flex flex-col">
 
-        {/* 결과 화면 — 지도 + 하단 정보 시트 */}
-        {selected && !isAnimating && (
-          <div className="flex-1 min-h-0 flex flex-col fade-up" style={{ gap: 0 }}>
-
-            {/* 지도 영역 */}
-            <div className="relative rounded-2xl overflow-hidden" style={{ flex: '1 1 0', minHeight: 0 }}>
-              {!loading && !error ? (
-                <KakaoMap center={mapCenter} style={{ width: '100%', height: '100%' }} level={4}>
-                  <MapMarker
-                    position={{ lat: parseFloat(selected.y), lng: parseFloat(selected.x) }}
-                    title={selected.place_name}
-                  />
-                </KakaoMap>
+          {/* 홈 */}
+          {!selected && !isAnimating && (
+            <div
+              ref={homeCardRef}
+              onMouseMove={handleMouseMove}
+              onMouseLeave={handleMouseLeave}
+              className="flex-1 flex flex-col items-center justify-center text-center px-6"
+              style={{
+                transform: `perspective(700px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
+                transition: tilt.x === 0 && tilt.y === 0
+                  ? 'transform 0.6s cubic-bezier(0.23,1,0.32,1)'
+                  : 'transform 0.08s ease',
+                willChange: 'transform',
+              }}
+            >
+              {isSearching ? (
+                <>
+                  <p className="text-3xl font-bold text-white mb-3">탐색 중...</p>
+                  <p className="text-sm" style={{ color: 'rgba(255,255,255,0.35)' }}>주변 맛집을 불러오고 있어요</p>
+                </>
               ) : (
-                <div className="w-full h-full flex items-center justify-center" style={{ background: '#0d1a14' }}>
-                  <p className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>
-                    {error ? '지도를 불러오지 못했습니다' : '지도 로딩 중...'}
+                <>
+                  <p className="font-bold mb-5 leading-tight"
+                    style={{
+                      fontSize: '2.6rem',
+                      background: 'linear-gradient(135deg, #ffffff 10%, #3ecf8e 90%)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      backgroundClip: 'text',
+                    }}>
+                    오늘 뭐 먹지?
                   </p>
-                </div>
+                  <p className="text-sm" style={{ color: 'rgba(255,255,255,0.3)' }}>
+                    아래 버튼을 눌러 랜덤 맛집을 뽑아보세요
+                  </p>
+                </>
               )}
             </div>
+          )}
 
-            {/* 하단 정보 시트 */}
-            <div key={selected.id} className="result-pop shrink-0 rounded-2xl mt-3" style={{
-              background: 'rgba(13,22,17,0.97)',
-              border: '1px solid rgba(62,207,142,0.2)',
-              boxShadow: '0 -4px 24px rgba(0,0,0,0.4)',
-            }}>
-              {/* 핸들 */}
-              <div className="flex justify-center pt-2 pb-2">
-                <div className="w-8 h-1 rounded-full" style={{ background: 'rgba(255,255,255,0.15)' }} />
+          {/* 뽑는 중 — 슬롯 */}
+          {isAnimating && (
+            <div className="flex-1 flex flex-col items-center justify-center text-center px-8">
+              <div className="flex gap-2 mb-6">
+                {[0, 0.18, 0.36].map((delay, i) => (
+                  <div key={i} className="w-2 h-2 rounded-full"
+                    style={{ background: '#3ecf8e', animation: `dotBounce 0.75s ease-in-out ${delay}s infinite` }} />
+                ))}
               </div>
-              <RestaurantCard restaurant={selected} />
+              <div className="relative h-10 w-full overflow-hidden">
+                {slot.prev && (
+                  <div key={`out-${slot.key}`} className="absolute inset-0 flex items-center justify-center"
+                    style={{ animation: 'slotOut 0.08s ease-in forwards' }}>
+                    <span className="text-xl font-bold truncate px-4 text-center"
+                      style={{ color: 'rgba(255,255,255,0.25)' }}>{slot.prev}</span>
+                  </div>
+                )}
+                <div key={`in-${slot.key}`} className="absolute inset-0 flex items-center justify-center"
+                  style={{ animation: slot.prev ? 'slotIn 0.08s ease-out forwards' : 'none' }}>
+                  <span className="text-xl font-bold text-white truncate px-4 text-center">{slot.curr}</span>
+                </div>
+              </div>
             </div>
+          )}
 
-          </div>
-        )}
-      </main>
+          {/* 결과 화면 — 지도(상단) + 정보 카드(하단) */}
+          {selected && !isAnimating && (
+            <div className="flex-1 min-h-0 flex flex-col px-4 pt-3 gap-3 fade-up">
 
-      {/* ── 하단 버튼 ── */}
-      <div
-        className="relative shrink-0 px-4 pt-3"
-        style={{
-          paddingBottom: 'calc(env(safe-area-inset-bottom) + 12px)',
-          background: '#080f0b',
-        }}
-      >
-        <button
-          onClick={() => pickRandom(!!selected)}
-          disabled={!canPick}
-          className="btn-pick w-full py-4 font-bold rounded-2xl text-sm select-none"
+              {/* 지도 — 상단 고정 높이 */}
+              <div
+                className="shrink-0 rounded-2xl overflow-hidden"
+                style={{ height: '42vh', minHeight: '200px', maxHeight: '300px' }}
+              >
+                {!loading && !error ? (
+                  <KakaoMap center={mapCenter} style={{ width: '100%', height: '100%' }} level={4}>
+                    <MapMarker
+                      position={{ lat: parseFloat(selected.y), lng: parseFloat(selected.x) }}
+                      title={selected.place_name}
+                    />
+                  </KakaoMap>
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center" style={{ background: '#0d1a14' }}>
+                    <p className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>
+                      {error ? '지도를 불러오지 못했습니다' : '지도 로딩 중...'}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* 맛집 정보 카드 */}
+              <div
+                key={selected.id}
+                className="result-pop flex-1 min-h-0 overflow-y-auto rounded-2xl"
+                style={{
+                  background: 'rgba(13,22,17,0.97)',
+                  border: '1px solid rgba(62,207,142,0.2)',
+                  boxShadow: '0 -4px 24px rgba(0,0,0,0.4)',
+                }}
+              >
+                <RestaurantCard restaurant={selected} />
+              </div>
+
+            </div>
+          )}
+        </main>
+
+        {/* ── 하단 버튼 ── */}
+        <div
+          className="shrink-0 px-4 pt-3"
+          style={{
+            paddingBottom: 'calc(env(safe-area-inset-bottom) + 12px)',
+            background: '#080f0b',
+          }}
         >
-          {isSearching ? '맛집 탐색 중...' : isAnimating ? '뽑는 중...' : selected ? '다시 뽑기' : '랜덤 뽑기'}
-        </button>
-      </div>
+          <button
+            onClick={() => pickRandom(!!selected)}
+            disabled={!canPick}
+            className="btn-pick w-full py-4 font-bold rounded-2xl text-sm select-none"
+          >
+            {isSearching ? '맛집 탐색 중...' : isAnimating ? '뽑는 중...' : selected ? '다시 뽑기' : '랜덤 뽑기'}
+          </button>
+        </div>
 
+      </div>
     </div>
   )
 }

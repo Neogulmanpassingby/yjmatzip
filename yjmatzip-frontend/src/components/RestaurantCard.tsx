@@ -24,7 +24,7 @@ export default function RestaurantCard({ restaurant }: Props) {
   return (
     <>
       {/* 상단 — 라벨 + 공유 */}
-      <div className="px-5 pt-1 pb-3">
+      <div className="px-5 pt-4 pb-3">
         <div className="flex items-center justify-between mb-2.5">
           <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full" style={{
             background: 'rgba(62,207,142,0.12)',
