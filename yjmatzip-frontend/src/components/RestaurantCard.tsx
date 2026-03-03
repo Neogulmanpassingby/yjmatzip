@@ -13,60 +13,52 @@ function shareToKakao(restaurant: Restaurant) {
   })
 }
 
-const glass: React.CSSProperties = {
-  background: 'rgba(255,255,255,0.07)',
-  backdropFilter: 'blur(24px)',
-  WebkitBackdropFilter: 'blur(24px)',
-  border: 'none',
-}
-
 const divider: React.CSSProperties = {
   height: 1,
-  background: 'linear-gradient(90deg, rgba(62,207,142,0.18) 0%, rgba(255,255,255,0.05) 100%)',
+  background: 'linear-gradient(90deg, rgba(62,207,142,0.2) 0%, rgba(255,255,255,0.04) 100%)',
 }
 
 interface Props { restaurant: Restaurant }
 
 export default function RestaurantCard({ restaurant }: Props) {
   return (
-    <div className="rounded-2xl overflow-hidden" style={glass}>
-
+    <>
       {/* 상단 — 라벨 + 공유 */}
-      <div className="px-5 pt-5 pb-4">
-        <div className="flex items-center justify-between mb-3">
+      <div className="px-5 pt-1 pb-3">
+        <div className="flex items-center justify-between mb-2.5">
           <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full" style={{
-            background: 'rgba(255,255,255,0.1)',
-            border: '1px solid rgba(255,255,255,0.2)',
+            background: 'rgba(62,207,142,0.12)',
+            border: '1px solid rgba(62,207,142,0.28)',
           }}>
-            <svg width="11" height="11" viewBox="0 0 12 12" fill="rgba(255,255,255,0.9)">
+            <svg width="10" height="10" viewBox="0 0 12 12" fill="#3ecf8e">
               <path d="M6 0L7.35 4.65L12 6L7.35 7.35L6 12L4.65 7.35L0 6L4.65 4.65L6 0Z"/>
             </svg>
-            <span className="text-xs font-semibold" style={{ color: 'rgba(255,255,255,0.9)', letterSpacing: '0.04em' }}>
+            <span className="text-xs font-semibold" style={{ color: '#3ecf8e', letterSpacing: '0.04em' }}>
               오늘의 추천
             </span>
           </div>
-          {/* 종이비행기 — 카카오톡 공유 */}
+          {/* 공유 버튼 */}
           <button
             onClick={() => shareToKakao(restaurant)}
-            className="select-none p-2 flex items-center justify-center"
-            style={{ color: 'rgba(255,255,255,0.4)', transition: 'color 0.15s' }}
+            className="select-none p-2 flex items-center justify-center rounded-lg"
+            style={{ color: 'rgba(255,255,255,0.35)', transition: 'color 0.15s' }}
             onMouseEnter={e => (e.currentTarget.style.color = '#3ecf8e')}
-            onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.4)')}
+            onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.35)')}
           >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M10 14l11 -11" />
               <path d="M21 3l-6.5 18a0.55 0.55 0 0 1 -1 0l-3.5 -7l-7 -3.5a0.55 0.55 0 0 1 0 -1l18 -6.5" />
             </svg>
           </button>
         </div>
-        <h2 className="text-xl font-bold text-white leading-snug mb-1.5">{restaurant.place_name}</h2>
-        <p className="text-xs" style={{ color: 'rgba(255,255,255,0.38)' }}>{restaurant.category_name}</p>
+        <h2 className="text-lg font-bold text-white leading-snug mb-1">{restaurant.place_name}</h2>
+        <p className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>{restaurant.category_name}</p>
       </div>
 
       <div style={divider} />
 
       {/* 정보 */}
-      <div className="px-5 py-4 space-y-3">
+      <div className="px-5 py-3 space-y-2.5">
         <div className="flex items-start gap-3">
           <svg className="w-4 h-4 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"
             style={{ color: 'rgba(255,255,255,0.3)' }}>
@@ -85,7 +77,7 @@ export default function RestaurantCard({ restaurant }: Props) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
                 d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
             </svg>
-            <span className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.7)' }}>{restaurant.phone}</span>
+            <span className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.65)' }}>{restaurant.phone}</span>
           </a>
         )}
       </div>
@@ -93,10 +85,10 @@ export default function RestaurantCard({ restaurant }: Props) {
       <div style={divider} />
 
       {/* 카카오맵 버튼 */}
-      <div className="px-5 py-4">
+      <div className="px-5 py-3">
         <a href={restaurant.place_url} target="_blank" rel="noopener noreferrer"
-          className="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-bold select-none transition-opacity"
-          style={{ background: '#FAE100', color: '#1a1a1a' }}
+          className="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-bold select-none"
+          style={{ background: '#FAE100', color: '#1a1a1a', transition: 'opacity 0.15s' }}
           onMouseEnter={e => (e.currentTarget.style.opacity = '0.88')}
           onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
         >
@@ -106,7 +98,6 @@ export default function RestaurantCard({ restaurant }: Props) {
           카카오맵에서 보기
         </a>
       </div>
-
-    </div>
+    </>
   )
 }

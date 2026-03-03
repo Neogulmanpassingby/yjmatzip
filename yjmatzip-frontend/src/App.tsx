@@ -252,43 +252,37 @@ function App() {
           </div>
         )}
 
-        {/* 결과 화면 — 지도 전체 + 하단 카드 오버레이 (Bottom Sheet) */}
+        {/* 결과 화면 — 지도 + 하단 정보 시트 */}
         {selected && !isAnimating && (
-          <div className="flex-1 min-h-0 relative overflow-hidden rounded-2xl fade-up">
+          <div className="flex-1 min-h-0 flex flex-col fade-up" style={{ gap: 0 }}>
 
-            {/* 지도 — 컨테이너 전체 채움 */}
-            {!loading && !error ? (
-              <KakaoMap center={mapCenter} style={{ width: '100%', height: '100%' }} level={4}>
-                <MapMarker
-                  position={{ lat: parseFloat(selected.y), lng: parseFloat(selected.x) }}
-                  title={selected.place_name}
-                />
-              </KakaoMap>
-            ) : (
-              <div className="w-full h-full flex items-center justify-center" style={{ background: '#0d1a14' }}>
-                <p className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>
-                  {error ? '지도를 불러오지 못했습니다' : '지도 로딩 중...'}
-                </p>
-              </div>
-            )}
+            {/* 지도 영역 */}
+            <div className="relative rounded-2xl overflow-hidden" style={{ flex: '1 1 0', minHeight: 0 }}>
+              {!loading && !error ? (
+                <KakaoMap center={mapCenter} style={{ width: '100%', height: '100%' }} level={4}>
+                  <MapMarker
+                    position={{ lat: parseFloat(selected.y), lng: parseFloat(selected.x) }}
+                    title={selected.place_name}
+                  />
+                </KakaoMap>
+              ) : (
+                <div className="w-full h-full flex items-center justify-center" style={{ background: '#0d1a14' }}>
+                  <p className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>
+                    {error ? '지도를 불러오지 못했습니다' : '지도 로딩 중...'}
+                  </p>
+                </div>
+              )}
+            </div>
 
-            {/* 지도 하단 페이드 */}
-            <div className="absolute bottom-0 left-0 right-0 pointer-events-none" style={{
-              height: '100px',
-              background: 'linear-gradient(to bottom, transparent, rgba(8,15,11,0.75))',
-            }} />
-
-            {/* 하단 시트 — 식당 정보 */}
-            <div key={selected.id} className="result-pop absolute bottom-0 left-0 right-0" style={{
-              background: 'rgba(8,15,11,0.93)',
-              backdropFilter: 'blur(24px)',
-              WebkitBackdropFilter: 'blur(24px)',
-              borderTop: '1px solid rgba(62,207,142,0.35)',
-              boxShadow: '0 -8px 32px rgba(0,0,0,0.5)',
+            {/* 하단 정보 시트 */}
+            <div key={selected.id} className="result-pop shrink-0 rounded-2xl mt-3" style={{
+              background: 'rgba(13,22,17,0.97)',
+              border: '1px solid rgba(62,207,142,0.2)',
+              boxShadow: '0 -4px 24px rgba(0,0,0,0.4)',
             }}>
-              {/* 드래그 핸들 */}
-              <div className="flex justify-center pt-2.5 pb-1">
-                <div className="w-9 h-1 rounded-full" style={{ background: 'rgba(255,255,255,0.18)' }} />
+              {/* 핸들 */}
+              <div className="flex justify-center pt-2 pb-2">
+                <div className="w-8 h-1 rounded-full" style={{ background: 'rgba(255,255,255,0.15)' }} />
               </div>
               <RestaurantCard restaurant={selected} />
             </div>
