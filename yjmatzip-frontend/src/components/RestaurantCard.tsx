@@ -1,16 +1,13 @@
 import type { Restaurant } from '../types/restaurant'
 
-function shareToKakao(restaurant: Restaurant) {
-  const w = window as any
-  if (!w.Kakao?.Share) return
-  w.Kakao.Share.sendDefault({
-    objectType: 'text',
-    text: `🍽️ 오늘 여기 어때?\n\n${restaurant.place_name}\n📍 ${restaurant.road_address_name || restaurant.address_name}${restaurant.phone ? `\n📞 ${restaurant.phone}` : ''}`,
-    link: {
-      mobileWebUrl: restaurant.place_url,
-      webUrl: restaurant.place_url,
-    },
-  })
+async function shareRestaurant(restaurant: Restaurant) {
+  const text = `🍽️ 오늘 여기 어때?\n\n${restaurant.place_name}\n📍 ${restaurant.road_address_name || restaurant.address_name}${restaurant.phone ? `\n📞 ${restaurant.phone}` : ''}`
+  if (navigator.share) {
+    await navigator.share({ title: restaurant.place_name, text, url: restaurant.place_url })
+  } else {
+    await navigator.clipboard.writeText(`${text}\n${restaurant.place_url}`)
+    alert('링크가 복사되었습니다!')
+  }
 }
 
 const divider: React.CSSProperties = {
@@ -39,7 +36,7 @@ export default function RestaurantCard({ restaurant }: Props) {
           </span>
         </div>
         <button
-          onClick={() => shareToKakao(restaurant)}
+          onClick={() => shareRestaurant(restaurant)}
           className="select-none p-1.5 flex items-center justify-center rounded-lg"
           style={{ color: 'rgba(255,255,255,0.35)', transition: 'color 0.15s' }}
           onMouseEnter={e => (e.currentTarget.style.color = '#3ecf8e')}
