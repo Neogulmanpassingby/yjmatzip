@@ -21,15 +21,15 @@ app.get('/api/visit', async (req, res) => {
   try {
     // 오늘 날짜로 해당 UUID의 접속 기록이 있는지 확인 후 Insert
     await pool.query(
-      `INSERT INTO access_log (uuid, ip, accessed_at) 
-       VALUES ($1, $2, CURRENT_DATE) 
+      `INSERT INTO access_log (uuid, ip, accessed_at)
+       VALUES ($1, $2, (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Seoul')::date)
        ON CONFLICT (uuid, accessed_at) DO NOTHING`,
       [uuid, ip]
     );
-    
+
     // 현재 DAU 조회
     const result = await pool.query(
-      `SELECT COUNT(DISTINCT uuid) as dau FROM access_log WHERE accessed_at = CURRENT_DATE`
+      `SELECT COUNT(DISTINCT uuid) as dau FROM access_log WHERE accessed_at = (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Seoul')::date`
     );
     
     res.json({ success: true, dau: result.rows[0].dau });
