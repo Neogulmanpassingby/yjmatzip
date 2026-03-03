@@ -16,7 +16,7 @@ spec:
       containers:
       - name: backend
         # 1. 방금 빌드해서 푸시한 진짜 이미지 주소로 교체합니다.
-        image: whdnduf/yjmatzip-backend:v3 
+        image: whdnduf/yjmatzip-backend:20260303-1557
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
