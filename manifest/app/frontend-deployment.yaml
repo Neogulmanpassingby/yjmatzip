@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: whdnduf/yjmatzip-frontend:20260303-1228
+        image: whdnduf/yjmatzip-frontend:20260303-1237
         imagePullPolicy: Always
         ports:
         - containerPort: 80 # Nginx 기본 포트
