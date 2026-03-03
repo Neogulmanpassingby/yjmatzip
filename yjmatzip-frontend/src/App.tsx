@@ -76,13 +76,6 @@ function App() {
   }, [])
 
   useEffect(() => {
-    const w = window as any
-    if (w.Kakao && !w.Kakao.isInitialized()) {
-      w.Kakao.init(import.meta.env.VITE_KAKAOMAP_KEY)
-    }
-  }, [])
-
-  useEffect(() => {
     if (loading || error) return
     setIsSearching(true)
     Promise.all(GRID.map(p => fetchFromPoint(p.lat, p.lng))).then(allResults => {
