@@ -105,7 +105,16 @@ function App() {
   function pickRandom() {
     if (restaurants.length === 0 || isAnimating) return
     const pick = restaurants[Math.floor(Math.random() * restaurants.length)]
-    setIsRedraw(selected !== null)
+
+    if (selected !== null) {
+      // 다시 뽑기: 룰렛 없이 바로 결과 교체
+      setIsRedraw(true)
+      setSelected(pick)
+      setMapCenter({ lat: parseFloat(pick.y) + 0.0015, lng: parseFloat(pick.x) })
+      return
+    }
+
+    setIsRedraw(false)
     setSelected(null)
     setIsAnimating(true)
     setSlot({ prev: null, curr: '', key: 0 })
@@ -209,7 +218,7 @@ function App() {
                   </p>
                   {dau !== null && (
                     <p className="text-xs" style={{ color: 'rgba(255,255,255,0.25)' }}>
-                      지금 <span style={{ color: 'rgba(62,207,142,0.7)' }}>{dau}명</span>이 함께 고민 중
+                      오늘 <span style={{ color: 'rgba(62,207,142,0.7)' }}>{dau}명</span>이 뽑았어요
                     </p>
                   )}
                 </>
