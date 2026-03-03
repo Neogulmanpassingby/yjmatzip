@@ -33,12 +33,22 @@ const glassDark: React.CSSProperties = {
   background: '#080f0b',
 }
 
+function getOrCreateUuid(): string {
+  let uuid = localStorage.getItem('visitor_uuid')
+  if (!uuid) {
+    uuid = crypto.randomUUID()
+    localStorage.setItem('visitor_uuid', uuid)
+  }
+  return uuid
+}
+
 function App() {
   const [loading, error] = useKakaoLoader({
     appkey: import.meta.env.VITE_KAKAOMAP_KEY,
     libraries: ['services'],
   })
 
+  const [dau, setDau] = useState<number | null>(null)
   const [restaurants, setRestaurants] = useState<Restaurant[]>([])
   const [selected, setSelected] = useState<Restaurant | null>(null)
   const [isSearching, setIsSearching] = useState(false)
@@ -64,6 +74,14 @@ function App() {
       )
     })
   }
+
+  useEffect(() => {
+    const uuid = getOrCreateUuid()
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/api/visit?uuid=${uuid}`)
+      .then(r => r.json())
+      .then(data => { if (data.dau !== undefined) setDau(Number(data.dau)) })
+      .catch(() => {})
+  }, [])
 
   useEffect(() => {
     const w = window as any
@@ -168,6 +186,15 @@ function App() {
               </p>
             </div>
           </div>
+          {dau !== null && (
+            <span className="text-xs px-2.5 py-1 rounded-full" style={{
+              background: 'rgba(62,207,142,0.12)',
+              color: '#3ecf8e',
+              border: '1px solid rgba(62,207,142,0.25)',
+            }}>
+              오늘 {dau}명 방문
+            </span>
+          )}
         </div>
       </header>
 
