@@ -3,7 +3,8 @@
     "allow": [
       "Bash(npm create:*)",
       "Bash(npm install:*)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(node -e \"\nconst centerLat = 37.2990, centerLng = 126.9715\nconst stepM = 300, rows = 4, cols = 4\nconst latStep = stepM / 111000\nconst lngStep = stepM / \\(111000 * Math.cos\\(centerLat * Math.PI / 180\\)\\)\n\nconst points = []\nfor \\(let r = 0; r < rows; r++\\)\n  for \\(let c = 0; c < cols; c++\\)\n    points.push\\({\n      lat: +\\(centerLat + \\(r - \\(rows-1\\)/2\\) * latStep\\).toFixed\\(5\\),\n      lng: +\\(centerLng + \\(c - \\(cols-1\\)/2\\) * lngStep\\).toFixed\\(5\\),\n    }\\)\n\nconsole.log\\('그리드 포인트:'\\)\npoints.forEach\\(\\(p,i\\) => console.log\\(i, p.lat, p.lng\\)\\)\nconsole.log\\(\\)\nconsole.log\\('lat 범위:', Math.min\\(...points.map\\(p=>p.lat\\)\\).toFixed\\(5\\), '~', Math.max\\(...points.map\\(p=>p.lat\\)\\).toFixed\\(5\\)\\)\nconsole.log\\('lng 범위:', Math.min\\(...points.map\\(p=>p.lng\\)\\).toFixed\\(5\\), '~', Math.max\\(...points.map\\(p=>p.lng\\)\\).toFixed\\(5\\)\\)\nconsole.log\\('검색반경 포함 lat:', \\(Math.min\\(...points.map\\(p=>p.lat\\)\\) - 350/111000\\).toFixed\\(5\\), '~', \\(Math.max\\(...points.map\\(p=>p.lat\\)\\) + 350/111000\\).toFixed\\(5\\)\\)\n\")"
     ]
   }
 }

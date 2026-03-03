@@ -19,13 +19,15 @@ function buildGrid(centerLat: number, centerLng: number, rows: number, cols: num
   return points
 }
 
-const GRID = buildGrid(37.2990, 126.9715, 4, 4, 300)
+const GRID = buildGrid(37.2975, 126.9740, 4, 4, 300)
+const GRID_WEIGHTS = [8, 4, 6, 15, 45, 45, 34, 39, 60, 60, 45, 45, 45, 60, 45, 45]
 const SEARCH_RADIUS = 350
+const CACHE_PREFIX = 'yjmatzip_grid_'
 
 function getOrCreateUuid(): string {
   let uuid = localStorage.getItem('visitor_uuid')
   if (!uuid) {
-    uuid = crypto.randomUUID()
+    uuid = crypto.randomUUID?.() ?? Math.random().toString(36).slice(2) + Date.now().toString(36)
     localStorage.setItem('visitor_uuid', uuid)
   }
   return uuid
@@ -38,7 +40,6 @@ function App() {
   })
 
   const [dau, setDau] = useState<number | null>(null)
-  const [restaurants, setRestaurants] = useState<Restaurant[]>([])
   const [selected, setSelected] = useState<Restaurant | null>(null)
   const [isSearching, setIsSearching] = useState(false)
   const [isAnimating, setIsAnimating] = useState(false)
@@ -46,10 +47,14 @@ function App() {
   const [mapCenter, setMapCenter] = useState(GRID[5])
   const [slot, setSlot] = useState<{ prev: string | null; curr: string; key: number }>({ prev: null, curr: '', key: 0 })
 
-  function fetchFromPoint(lat: number, lng: number): Promise<Restaurant[]> {
+  function fetchFromPoint(p: { lat: number; lng: number }): Promise<Restaurant[]> {
+    const key = `${CACHE_PREFIX}${p.lat.toFixed(4)}_${p.lng.toFixed(4)}`
+    const cached = sessionStorage.getItem(key)
+    if (cached) return Promise.resolve(JSON.parse(cached))
+
     return new Promise(resolve => {
       const ps = new window.kakao.maps.services.Places()
-      const location = new window.kakao.maps.LatLng(lat, lng)
+      const location = new window.kakao.maps.LatLng(p.lat, p.lng)
       const collected: Restaurant[] = []
       ps.categorySearch(
         'FD6',
@@ -57,8 +62,14 @@ function App() {
           if (status === window.kakao.maps.services.Status.OK) {
             collected.push(...results)
             if (pagination.hasNextPage) pagination.nextPage()
-            else resolve(collected)
-          } else resolve(collected)
+            else {
+              sessionStorage.setItem(key, JSON.stringify(collected))
+              resolve(collected)
+            }
+          } else {
+            sessionStorage.setItem(key, JSON.stringify(collected))
+            resolve(collected)
+          }
         },
         { location, radius: SEARCH_RADIUS },
       )
@@ -73,17 +84,15 @@ function App() {
       .catch(() => {})
   }, [])
 
-  useEffect(() => {
-    if (loading || error) return
-    setIsSearching(true)
-    Promise.all(GRID.map(p => fetchFromPoint(p.lat, p.lng))).then(allResults => {
-      const flat = allResults.flat()
-      const seen = new Set<string>()
-      const unique = flat.filter(r => { if (seen.has(r.id)) return false; seen.add(r.id); return true })
-      setRestaurants(unique)
-      setIsSearching(false)
-    })
-  }, [loading, error])
+  function pickGridByWeight(): number {
+    const total = GRID_WEIGHTS.reduce((s, w) => s + w, 0)
+    let rand = Math.random() * total
+    for (let i = 0; i < GRID_WEIGHTS.length; i++) {
+      rand -= GRID_WEIGHTS[i]
+      if (rand <= 0) return i
+    }
+    return GRID_WEIGHTS.length - 1
+  }
 
   function tickSlot(list: Restaurant[], finalPick: Restaurant, step: number, delay: number, prev: string | null) {
     const r = list[Math.floor(Math.random() * list.length)]
@@ -102,9 +111,16 @@ function App() {
     }
   }
 
-  function pickRandom() {
-    if (restaurants.length === 0 || isAnimating) return
-    const pick = restaurants[Math.floor(Math.random() * restaurants.length)]
+  async function pickRandom() {
+    if (isAnimating || isSearching || loading || error) return
+
+    const gridIdx = pickGridByWeight()
+    setIsSearching(true)
+    const results = await fetchFromPoint(GRID[gridIdx])
+    setIsSearching(false)
+
+    if (results.length === 0) return
+    const pick = results[Math.floor(Math.random() * results.length)]
 
     if (selected !== null) {
       // 다시 뽑기: 룰렛 없이 바로 결과 교체
@@ -118,10 +134,10 @@ function App() {
     setSelected(null)
     setIsAnimating(true)
     setSlot({ prev: null, curr: '', key: 0 })
-    tickSlot(restaurants, pick, 14, 60, null)
+    tickSlot(results, pick, 14, 60, null)
   }
 
-  const canPick = !isSearching && restaurants.length > 0 && !isAnimating
+  const canPick = !isSearching && !isAnimating && !loading && !error
 
   // 홈 카드 3D 틸트
   const homeCardRef = useRef<HTMLDivElement>(null)
