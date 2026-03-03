@@ -42,6 +42,7 @@ function App() {
   const [selected, setSelected] = useState<Restaurant | null>(null)
   const [isSearching, setIsSearching] = useState(false)
   const [isAnimating, setIsAnimating] = useState(false)
+  const [isRedraw, setIsRedraw] = useState(false)
   const [mapCenter, setMapCenter] = useState(GRID[5])
   const [slot, setSlot] = useState<{ prev: string | null; curr: string; key: number }>({ prev: null, curr: '', key: 0 })
 
@@ -104,6 +105,7 @@ function App() {
   function pickRandom() {
     if (restaurants.length === 0 || isAnimating) return
     const pick = restaurants[Math.floor(Math.random() * restaurants.length)]
+    setIsRedraw(selected !== null)
     setSelected(null)
     setIsAnimating(true)
     setSlot({ prev: null, curr: '', key: 0 })
@@ -206,14 +208,9 @@ function App() {
                     아래 버튼을 눌러 랜덤 맛집을 뽑아보세요
                   </p>
                   {dau !== null && (
-                    <div className="flex items-center gap-1.5 px-3.5 py-2 rounded-full" style={{
-                      background: 'rgba(62,207,142,0.08)',
-                      border: '1px solid rgba(62,207,142,0.2)',
-                    }}>
-                      <span className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>지금</span>
-                      <span className="text-sm font-bold" style={{ color: '#3ecf8e' }}>{dau}명</span>
-                      <span className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>과 함께하는 중</span>
-                    </div>
+                    <p className="text-xs" style={{ color: 'rgba(255,255,255,0.25)' }}>
+                      지금 <span style={{ color: 'rgba(62,207,142,0.7)' }}>{dau}명</span>이 함께 고민 중
+                    </p>
                   )}
                 </>
               )}
@@ -270,11 +267,10 @@ function App() {
               {/* 하단 정보 패널 — 항상 완전히 보임 */}
               <div
                 key={selected.id}
-                className="slide-up shrink-0"
+                className={`${isRedraw ? 'card-redraw' : 'slide-up'} shrink-0`}
                 style={{
                   background: '#0d1612',
-                  borderTop: '1px solid rgba(62,207,142,0.18)',
-                  boxShadow: '0 -8px 32px rgba(0,0,0,0.5)',
+                  boxShadow: '0 -12px 40px rgba(0,0,0,0.6)',
                 }}
               >
                 <RestaurantCard restaurant={selected} />
