@@ -4,7 +4,7 @@ metadata:
   name: yjmatzip-frontend
   namespace: yjmatzip
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: yjmatzip-frontend
@@ -20,9 +20,12 @@ spec:
         ports:
         - containerPort: 80 # Nginx 기본 포트
         resources:
+          requests:
+            cpu: "200m"
+            memory: "256Mi"
           limits:
-            memory: "128Mi" # 정적 파일 서빙이라 메모리를 거의 안 씁니다
-            cpu: "100m"
+            cpu: "800m"
+            memory: "512Mi" # 정적 파일 서빙이라 메모리를 거의 안 씁니다
 ---
 apiVersion: v1
 kind: Service
