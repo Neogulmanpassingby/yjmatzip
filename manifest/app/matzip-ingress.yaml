@@ -19,6 +19,26 @@ spec:
             name: yjmatzip-backend-svc
             port:
               number: 80
+  - host: api-origin.yjmatzip.com
+    http:
+      paths:
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: yjmatzip-backend-svc
+            port:
+              number: 80
+  - host: api.yjmatzip.com
+    http:
+      paths:
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: yjmatzip-backend-svc
+            port:
+              number: 80
       # 2. 그 외의 모든 요청(/)은 React 프론트엔드(Nginx)로 전달
       # - path: /
       #  pathType: Prefix

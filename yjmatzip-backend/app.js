@@ -11,6 +11,18 @@ const pool = new Pool({
   port: 5432,
 });
 
+app.use((req, res, next) => {
+  const allowedOrigins = ['https://matzip.yjmatzip.com'];
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') return res.sendStatus(204);
+  next();
+});
+
 app.use(express.json());
 
 // 메인 페이지 접속 및 DAU 기록 API
