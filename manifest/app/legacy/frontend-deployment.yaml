@@ -4,7 +4,7 @@ metadata:
   name: yjmatzip-frontend
   namespace: yjmatzip
 spec:
-  replicas: 3
+  replicas: 0
   selector:
     matchLabels:
       app: yjmatzip-frontend

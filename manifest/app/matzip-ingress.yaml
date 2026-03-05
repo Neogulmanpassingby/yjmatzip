@@ -20,10 +20,10 @@ spec:
             port:
               number: 80
       # 2. 그 외의 모든 요청(/)은 React 프론트엔드(Nginx)로 전달
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: yjmatzip-frontend-svc
-            port:
-              number: 80
+      # - path: /
+      #  pathType: Prefix
+      #  backend:
+      #    service:
+      #      name: yjmatzip-frontend-svc
+      #      port:
+      #        number: 80
