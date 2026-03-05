@@ -1,0 +1,11 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChartConfig
+metadata:
+  name: traefik
+  namespace: kube-system
+spec:
+  valuesContent: |-
+    additionalArguments:
+      - "--log.level=DEBUG"
+      # 3,500명 이상의 동시 요청을 안정적으로 수용하기 위해 5,000으로 상향
+      - "--entryPoints.web.http2.maxConcurrentStreams=5000" 
