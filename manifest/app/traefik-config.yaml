@@ -7,5 +7,6 @@ spec:
   valuesContent: |-
     additionalArguments:
       - "--log.level=DEBUG"
+      - "--accesslog=true"
       # 3,500명 이상의 동시 요청을 안정적으로 수용하기 위해 5,000으로 상향
       - "--entryPoints.web.http2.maxConcurrentStreams=5000" 
