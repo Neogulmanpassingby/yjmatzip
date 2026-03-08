@@ -59,21 +59,21 @@ body,
 
 /* 버튼 */
 .btn-pick {
-  background: linear-gradient(135deg, #3ecf8e 0%, #25a06b 100%);
+  background: linear-gradient(135deg, var(--grad-from, #3ecf8e) 0%, var(--grad-to, #25a06b) 100%);
   border: none;
   color: #fff;
   letter-spacing: 0.02em;
-  box-shadow: 0 0 28px rgba(62,207,142,0.45), 0 6px 20px rgba(0,0,0,0.4);
-  transition: filter 0.2s ease, box-shadow 0.2s ease, transform 0.08s ease;
+  box-shadow: 0 0 28px rgba(var(--accent-rgb, 62,207,142),0.45), 0 6px 20px rgba(0,0,0,0.4);
+  transition: background 0.5s ease, filter 0.2s ease, box-shadow 0.5s ease, transform 0.08s ease;
 }
 .btn-pick:not(:disabled):hover {
   filter: brightness(1.1);
-  box-shadow: 0 0 40px rgba(62,207,142,0.6), 0 8px 24px rgba(0,0,0,0.4);
+  box-shadow: 0 0 40px rgba(var(--accent-rgb, 62,207,142),0.6), 0 8px 24px rgba(0,0,0,0.4);
 }
 .btn-pick:not(:disabled):active {
   transform: scale(0.97);
   filter: brightness(0.93);
-  box-shadow: 0 0 16px rgba(62,207,142,0.3), 0 4px 12px rgba(0,0,0,0.4);
+  box-shadow: 0 0 16px rgba(var(--accent-rgb, 62,207,142),0.3), 0 4px 12px rgba(0,0,0,0.4);
 }
 .btn-pick:disabled {
   background: rgba(255, 255, 255, 0.05);

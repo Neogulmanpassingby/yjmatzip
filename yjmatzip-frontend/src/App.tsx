@@ -33,12 +33,41 @@ function getOrCreateUuid(): string {
   return uuid
 }
 
+type Mode = 'restaurant' | 'cafe'
+const CATEGORY = { restaurant: 'FD6', cafe: 'CE7' } as const
+
+const THEME = {
+  restaurant: {
+    '--accent': '#3ecf8e',
+    '--accent-rgb': '62,207,142',
+    '--bg': '#080f0b',
+    '--panel-bg': '#0d1612',
+    '--blob1': 'rgba(46,78,63,0.6)',
+    '--blob2': 'rgba(61,107,85,0.35)',
+    '--blob3': 'rgba(46,78,63,0.45)',
+    '--grad-from': '#3ecf8e',
+    '--grad-to': '#25a06b',
+  },
+  cafe: {
+    '--accent': '#c4956a',
+    '--accent-rgb': '196,149,106',
+    '--bg': '#0b0908',
+    '--panel-bg': '#12100d',
+    '--blob1': 'rgba(78,58,40,0.6)',
+    '--blob2': 'rgba(107,80,55,0.35)',
+    '--blob3': 'rgba(78,58,40,0.45)',
+    '--grad-from': '#c4956a',
+    '--grad-to': '#a07248',
+  },
+} as const
+
 function App() {
   const [loading, error] = useKakaoLoader({
     appkey: import.meta.env.VITE_KAKAOMAP_KEY,
     libraries: ['services'],
   })
 
+  const [mode, setMode] = useState<Mode>('restaurant')
   const [dau, setDau] = useState<number | null>(null)
   const [selected, setSelected] = useState<Restaurant | null>(null)
   const [isSearching, setIsSearching] = useState(false)
@@ -47,8 +76,15 @@ function App() {
   const [mapCenter, setMapCenter] = useState(GRID[5])
   const [slot, setSlot] = useState<{ prev: string | null; curr: string; key: number }>({ prev: null, curr: '', key: 0 })
 
+  function handleModeToggle(next: Mode) {
+    if (next === mode || isAnimating || isSearching) return
+    setMode(next)
+    setSelected(null)
+    setIsRedraw(false)
+  }
+
   function fetchFromPoint(p: { lat: number; lng: number }): Promise<Restaurant[]> {
-    const key = `${CACHE_PREFIX}${p.lat.toFixed(4)}_${p.lng.toFixed(4)}`
+    const key = `${CACHE_PREFIX}${mode}_${p.lat.toFixed(4)}_${p.lng.toFixed(4)}`
     const cached = sessionStorage.getItem(key)
     if (cached) return Promise.resolve(JSON.parse(cached))
 
@@ -57,7 +93,7 @@ function App() {
       const location = new window.kakao.maps.LatLng(p.lat, p.lng)
       const collected: Restaurant[] = []
       ps.categorySearch(
-        'FD6',
+        CATEGORY[mode],
         (results: Restaurant[], status: string, pagination: any) => {
           if (status === window.kakao.maps.services.Status.OK) {
             collected.push(...results)
@@ -155,9 +191,11 @@ function App() {
     setTilt({ x: 0, y: 0 })
   }
 
+  const t = THEME[mode]
+
   return (
     /* 전체 배경 */
-    <div className="relative h-full overflow-hidden" style={{ background: '#080f0b' }}>
+    <div className="relative h-full overflow-hidden transition-colors duration-500" style={{ background: t['--bg'], ...t as React.CSSProperties }}>
 
       {/* 배경 블롭 — 풀스크린 */}
       <div className="absolute inset-0 pointer-events-none">
@@ -165,12 +203,12 @@ function App() {
           backgroundImage: 'linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)',
           backgroundSize: '40px 40px',
         }} />
-        <div className="absolute -top-32 -left-24 w-96 h-96 rounded-full"
-          style={{ background: 'radial-gradient(circle, rgba(46,78,63,0.6) 0%, transparent 70%)' }} />
-        <div className="absolute top-1/3 -right-28 w-80 h-80 rounded-full"
-          style={{ background: 'radial-gradient(circle, rgba(61,107,85,0.35) 0%, transparent 70%)' }} />
-        <div className="absolute -bottom-24 left-1/3 w-72 h-72 rounded-full"
-          style={{ background: 'radial-gradient(circle, rgba(46,78,63,0.45) 0%, transparent 70%)' }} />
+        <div className="absolute -top-32 -left-24 w-96 h-96 rounded-full transition-all duration-700"
+          style={{ background: `radial-gradient(circle, ${t['--blob1']} 0%, transparent 70%)` }} />
+        <div className="absolute top-1/3 -right-28 w-80 h-80 rounded-full transition-all duration-700"
+          style={{ background: `radial-gradient(circle, ${t['--blob2']} 0%, transparent 70%)` }} />
+        <div className="absolute -bottom-24 left-1/3 w-72 h-72 rounded-full transition-all duration-700"
+          style={{ background: `radial-gradient(circle, ${t['--blob3']} 0%, transparent 70%)` }} />
       </div>
 
       {/* 콘텐츠 — 모바일 기준, 데스크탑 중앙 고정 */}
@@ -179,17 +217,37 @@ function App() {
         {/* ── 헤더 ── */}
         <header
           className="shrink-0 px-5 pb-4"
-          style={{ paddingTop: 'calc(env(safe-area-inset-top) + 14px)', background: '#080f0b' }}
+          style={{ paddingTop: 'calc(env(safe-area-inset-top) + 14px)', background: t['--bg'], transition: 'background 0.5s' }}
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <img src={logo} alt="성균관대 로고" className="w-8 h-8 shrink-0 object-contain" />
+              <img src={logo} alt="성균관대 로고" className="w-8 h-8 shrink-0 object-contain" style={{ filter: mode === 'cafe' ? 'sepia(1) saturate(2) hue-rotate(-10deg) brightness(0.85)' : 'none', transition: 'filter 0.5s' }} />
               <div>
-                <h1 className="text-sm font-semibold text-white leading-tight">율전캠 오늘 뭐 먹지?</h1>
+                <h1 className="text-sm font-semibold text-white leading-tight">{mode === 'cafe' ? '오늘 어디 갈까?' : '오늘 뭐 먹지?'}</h1>
                 <p className="text-xs leading-tight" style={{ color: 'rgba(255,255,255,0.4)' }}>
                   성균관대 자연과학캠퍼스
                 </p>
               </div>
+            </div>
+            {/* 맛집/카페 토글 */}
+            <div
+              className="flex rounded-full p-0.5"
+              style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.06)' }}
+            >
+              {([['restaurant', '맛집'], ['cafe', '카페']] as const).map(([key, label]) => (
+                <button
+                  key={key}
+                  onClick={() => handleModeToggle(key)}
+                  className="px-3 py-1 text-xs font-semibold rounded-full transition-all duration-200 select-none"
+                  style={{
+                    background: mode === key ? `rgba(${t['--accent-rgb']},0.18)` : 'transparent',
+                    color: mode === key ? t['--accent'] : 'rgba(255,255,255,0.35)',
+                    boxShadow: mode === key ? `0 0 8px rgba(${t['--accent-rgb']},0.15)` : 'none',
+                  }}
+                >
+                  {label}
+                </button>
+              ))}
             </div>
           </div>
         </header>
@@ -215,26 +273,26 @@ function App() {
               {isSearching ? (
                 <>
                   <p className="text-3xl font-bold text-white mb-3">탐색 중...</p>
-                  <p className="text-sm" style={{ color: 'rgba(255,255,255,0.35)' }}>주변 맛집을 불러오고 있어요</p>
+                  <p className="text-sm" style={{ color: 'rgba(255,255,255,0.35)' }}>주변 {mode === 'cafe' ? '카페를' : '맛집을'} 불러오고 있어요</p>
                 </>
               ) : (
                 <>
-                  <p className="font-bold mb-4 leading-tight"
+                  <p key={mode} className="font-bold mb-4 leading-tight"
                     style={{
                       fontSize: '2.6rem',
-                      background: 'linear-gradient(135deg, #ffffff 10%, #3ecf8e 90%)',
+                      background: `linear-gradient(135deg, #ffffff 10%, ${t['--accent']} 90%)`,
                       WebkitBackgroundClip: 'text',
                       WebkitTextFillColor: 'transparent',
                       backgroundClip: 'text',
                     }}>
-                    오늘 뭐 먹지?
+                    {mode === 'cafe' ? '오늘 어디 갈까?' : '오늘 뭐 먹지?'}
                   </p>
                   <p className="text-sm mb-6" style={{ color: 'rgba(255,255,255,0.3)' }}>
-                    아래 버튼을 눌러 랜덤 맛집을 뽑아보세요
+                    아래 버튼을 눌러 랜덤 {mode === 'cafe' ? '카페를' : '맛집을'} 뽑아보세요
                   </p>
                   {dau !== null && (
                     <p className="text-xs" style={{ color: 'rgba(255,255,255,0.25)' }}>
-                      오늘 <span style={{ color: 'rgba(62,207,142,0.7)' }}>{dau}명</span>이 뽑았어요
+                      오늘 <span style={{ color: `rgba(${t['--accent-rgb']},0.7)` }}>{dau}명</span>이 뽑았어요
                     </p>
                   )}
                 </>
@@ -248,7 +306,7 @@ function App() {
               <div className="flex gap-2 mb-6">
                 {[0, 0.18, 0.36].map((delay, i) => (
                   <div key={i} className="w-2 h-2 rounded-full"
-                    style={{ background: '#3ecf8e', animation: `dotBounce 0.75s ease-in-out ${delay}s infinite` }} />
+                    style={{ background: t['--accent'], animation: `dotBounce 0.75s ease-in-out ${delay}s infinite` }} />
                 ))}
               </div>
               <div className="relative h-10 w-full overflow-hidden">
@@ -281,7 +339,7 @@ function App() {
                     />
                   </KakaoMap>
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center" style={{ background: '#0d1a14' }}>
+                  <div className="w-full h-full flex items-center justify-center" style={{ background: t['--panel-bg'] }}>
                     <p className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>
                       {error ? '지도를 불러오지 못했습니다' : '지도 로딩 중...'}
                     </p>
@@ -294,11 +352,12 @@ function App() {
                 key={selected.id}
                 className={`${isRedraw ? 'card-redraw' : 'slide-up'} shrink-0`}
                 style={{
-                  background: '#0d1612',
+                  background: t['--panel-bg'],
                   boxShadow: '0 -12px 40px rgba(0,0,0,0.6)',
+                  transition: 'background 0.5s',
                 }}
               >
-                <RestaurantCard restaurant={selected} />
+                <RestaurantCard restaurant={selected} accent={t['--accent']} accentRgb={t['--accent-rgb']} />
               </div>
 
             </div>
@@ -310,7 +369,8 @@ function App() {
           className="shrink-0 px-4 pt-3"
           style={{
             paddingBottom: 'calc(env(safe-area-inset-bottom) + 12px)',
-            background: '#080f0b',
+            background: t['--bg'],
+            transition: 'background 0.5s',
           }}
         >
           <button
@@ -318,7 +378,7 @@ function App() {
             disabled={!canPick}
             className="btn-pick w-full py-4 font-bold rounded-2xl text-sm select-none"
           >
-            {isSearching ? '맛집 탐색 중...' : isAnimating ? '뽑는 중...' : selected ? '다시 뽑기' : '랜덤 뽑기'}
+            {isSearching ? `${mode === 'cafe' ? '카페' : '맛집'} 탐색 중...` : isAnimating ? '뽑는 중...' : selected ? '다시 뽑기' : '랜덤 뽑기'}
           </button>
         </div>
 
