@@ -2,6 +2,7 @@ const express = require('express');
 const { Pool } = require('pg');
 const app = express();
 
+// change
 // PostgreSQL 연결 설정 (아까 만든 서비스 주소 활용)
 const pool = new Pool({
   host: 'postgres-svc.yjmatzip.svc.cluster.local',
