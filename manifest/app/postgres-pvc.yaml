@@ -8,4 +8,4 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 5Gi # NucBox 용량을 고려해 5GB로 설정
+      storage: 5Gi

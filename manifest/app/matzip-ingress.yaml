@@ -3,10 +3,8 @@ kind: Ingress
 metadata:
   name: yjmatzip-ingress
   namespace: yjmatzip
-  annotations:
-    # Traefik 인그레스 컨트롤러를 사용한다고 명시
-    kubernetes.io/ingress.class: traefik
 spec:
+  ingressClassName: cilium
   rules:
   - host: matzip.yjmatzip.com
     http:

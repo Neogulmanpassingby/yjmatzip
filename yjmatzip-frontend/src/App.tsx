@@ -120,6 +120,16 @@ function App() {
       .catch(() => {})
   }, [])
 
+  // 앱 로드 시 모든 그리드 프리페치
+  const prefetchedRef = useRef<Set<string>>(new Set())
+  useEffect(() => {
+    if (loading || error) return
+    const key = `prefetch_${mode}`
+    if (prefetchedRef.current.has(key)) return
+    prefetchedRef.current.add(key)
+    GRID.forEach(p => fetchFromPoint(p))
+  }, [loading, error, mode])
+
   function pickGridByWeight(): number {
     const total = GRID_WEIGHTS.reduce((s, w) => s + w, 0)
     let rand = Math.random() * total
