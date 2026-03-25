@@ -52,4 +52,20 @@ app.get('/api/visit', async (req, res) => {
   }
 });
 
+app.get('/api/debug/cpu', (req, res) => {
+  let count = 0;
+  // 약 1~2초간 CPU를 100% 점유하는 루프
+  for (let i = 0; i < 1e8; i++) {
+    count += Math.sqrt(i);
+  }
+  res.json({ success: true, count });
+});
+
+app.get('/api/debug/sleep', async (req, res) => {
+  const delay = req.query.ms || 1000;
+  // 강제로 멈추기
+  await new Promise(resolve => setTimeout(resolve, delay));
+  res.json({ success: true, waited: delay });
+});
+
 app.listen(8080, () => console.log('Backend running on port 8080'));
