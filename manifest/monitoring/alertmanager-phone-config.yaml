@@ -18,3 +18,4 @@ spec:
     - name: 'aws-lambda-phone'
       webhookConfigs:
         - url: 'https://hkclepuol5tkqre3vffkztf3c40abpcc.lambda-url.us-west-2.on.aws/' # 네 람다 주소
+#trigger ga
