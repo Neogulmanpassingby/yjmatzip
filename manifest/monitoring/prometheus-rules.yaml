@@ -10,14 +10,11 @@ spec:
   - name: cpu-alerts
     rules:
     - alert: AllCpusHighLoad
-      # 모든 코어의 사용률 중 최솟값이 90 이상인 경우 (즉, 전 코어 90% 이상)
+      # 10%만 넘어도 알람 터지게 수정 (테스트용)
       expr: |
         min by (instance) (
           100 - (irate(node_cpu_seconds_total{mode="idle"}[5m]) * 100)
-        ) > 90
-      for: 2m # 일시적인 튀는 현상을 방지하기 위해 2분간 지속될 때 발생
+        ) > 10 
+      for: 10s # 10초만 유지되면 바로 발사!
       labels:
         severity: critical
-      annotations:
-        summary: "모든 CPU 코어 과부하 감지: {{ $labels.instance }}"
-        description: "현재 모든 CPU 코어(4개)의 사용률이 90%를 초과했습니다. 즉시 확인 바랍니다."
