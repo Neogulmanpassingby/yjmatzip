@@ -26,7 +26,7 @@ jobs:
       # 2. ArgoCD Webhook 호출 (즉시 새로고침 트리거)
       - name: Trigger ArgoCD Refresh
         run: |
-          curl -X POST \
+          curl -k -X POST \
             -H "Authorization: Bearer ${{ secrets.ARGOCD_TOKEN }}" \
             -H "Content-Type: application/json" \
             "https://${{ secrets.ARGOCD_SERVER }}/api/v1/applications/${{ secrets.ARGOCD_APP_NAME }}/sync" \
