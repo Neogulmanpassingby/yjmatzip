@@ -1,0 +1,23 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: high-cpu-alerts
+  namespace: monitoring
+  labels:
+    release: kube-prom # Operator가 읽을 수 있도록 설치된 release 라벨과 맞춰주세요
+spec:
+  groups:
+  - name: cpu-alerts
+    rules:
+    - alert: AllCpusHighLoad
+      # 모든 코어의 사용률 중 최솟값이 90 이상인 경우 (즉, 전 코어 90% 이상)
+      expr: |
+        min by (instance) (
+          100 - (irate(node_cpu_seconds_total{mode="idle"}[5m]) * 100)
+        ) > 90
+      for: 2m # 일시적인 튀는 현상을 방지하기 위해 2분간 지속될 때 발생
+      labels:
+        severity: critical
+      annotations:
+        summary: "모든 CPU 코어 과부하 감지: {{ $labels.instance }}"
+        description: "현재 모든 CPU 코어(4개)의 사용률이 90%를 초과했습니다. 즉시 확인 바랍니다."
