@@ -14,7 +14,7 @@ spec:
       expr: |
         min by (instance) (
           100 - (irate(node_cpu_seconds_total{mode="idle"}[5m]) * 100)
-        ) > 10 
-      for: 10s # 10초만 유지되면 바로 발사!
+        ) > 90 
+      for: 60s # 60초만 유지되면 바로 발사!
       labels:
         severity: critical

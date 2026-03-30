@@ -2,20 +2,22 @@ apiVersion: monitoring.coreos.com/v1alpha1
 kind: AlertmanagerConfig
 metadata:
   name: phone-alert-config
-  namespace: monitoring # Alertmanager가 떠 있는 네임스페이스
+  namespace: monitoring
   labels:
-    alertcfg: enabled # Operator가 이 설정을 읽어갈 수 있게 라벨 부여
+    alertcfg: enabled
 spec:
   route:
     receiver: 'aws-lambda-phone'
-    groupWait: 30s
-    groupInterval: 5m
-    repeatInterval: 1h # 1시간에 한 번만 전화 오게
+    groupWait: 10s       # 테스트를 위해 10초로 단축
+    groupInterval: 1m    # 테스트를 위해 1분으로 단축
+    repeatInterval: 1h
+    # matchers를 최대한 단순화해서 모든 severity: critical을 잡도록 수정
     matchers:
       - name: severity
-        value: critical # severity가 critical인 알람만 필터링
+        value: critical
+        matchType: "="   # 명시적으로 일치 확인
   receivers:
     - name: 'aws-lambda-phone'
       webhookConfigs:
-        - url: 'https://hkclepuol5tkqre3vffkztf3c40abpcc.lambda-url.us-west-2.on.aws/' # 네 람다 주소
-#trigger ga
+        - url: 'https://hkclepuol5tkqre3vffkztf3c40abpcc.lambda-url.us-west-2.on.aws/' # 여기 주소 다시 확인!
+          sendResolved: true       # 상황 종료 시에도 알람 오게 설정
